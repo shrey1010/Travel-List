@@ -16,6 +16,10 @@ export default function App(){
     setItems((items)=>(items.map((i)=>(i.id===item.id ? {...i , packed:!i.packed}:i))))
   }
 
+  function deleteAllItems(){
+    setItems([])
+  }
+
   return (
     <div className="app">
       <Logo />
@@ -24,6 +28,7 @@ export default function App(){
         items={items}
         handleDeleteItems={handleDeleteItems}
         handleUpdatePacked={handleUpdatePacked}
+        deleteAllItems={deleteAllItems}
       />
       <Stats items={items} />
     </div>
@@ -65,15 +70,24 @@ function Form({handleAddItems}){
     </form>
   );
 }
-function PackingList({ items, handleDeleteItems, handleUpdatePacked }) {
-
-  const [sortBy , setSortBy] = useState("input")
+function PackingList({
+  items,
+  handleDeleteItems,
+  handleUpdatePacked,
+  deleteAllItems,
+}) {
+  const [sortBy, setSortBy] = useState("input");
   let sortedItems;
 
-  if(sortBy==="input") sortedItems = items
-  if(sortBy==="description") sortedItems = items.slice().sort((a,b)=>a.description.localeCompare(b.description));
-  if(sortBy==="packed") sortedItems = items.slice().sort((a,b)=>Number(a.packed)-Number(b.packed));
-
+  if (sortBy === "input") sortedItems = items;
+  if (sortBy === "description")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => a.description.localeCompare(b.description));
+  if (sortBy === "packed")
+    sortedItems = items
+      .slice()
+      .sort((a, b) => Number(a.packed) - Number(b.packed));
 
   return (
     <div className="list">
@@ -93,6 +107,7 @@ function PackingList({ items, handleDeleteItems, handleUpdatePacked }) {
           <option value="description">Sort by Description </option>
           <option value="packed">Sort by Packed Status </option>
         </select>
+        <button onClick={()=>deleteAllItems()}>Clear list</button>
       </div>
     </div>
   );
