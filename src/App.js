@@ -66,10 +66,19 @@ function Form({handleAddItems}){
   );
 }
 function PackingList({ items, handleDeleteItems, handleUpdatePacked }) {
+
+  const [sortBy , setSortBy] = useState("input")
+  let sortedItems;
+
+  if(sortBy==="input") sortedItems = items
+  if(sortBy==="description") sortedItems = items.slice().sort((a,b)=>a.description.localeCompare(b.description));
+  if(sortBy==="packed") sortedItems = items.slice().sort((a,b)=>Number(a.packed)-Number(b.packed));
+
+
   return (
     <div className="list">
       <ul>
-        {items.map((item) => (
+        {sortedItems.map((item) => (
           <Item
             item={item}
             handleDeleteItems={handleDeleteItems}
@@ -78,6 +87,13 @@ function PackingList({ items, handleDeleteItems, handleUpdatePacked }) {
           />
         ))}
       </ul>
+      <div className="actions">
+        <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+          <option value="input">Sort by Input Order</option>
+          <option value="description">Sort by Description </option>
+          <option value="packed">Sort by Packed Status </option>
+        </select>
+      </div>
     </div>
   );
 }
@@ -97,8 +113,18 @@ function Item({ item, handleDeleteItems, handleUpdatePacked }) {
     </li>
   );
 }
+
 function Stats({items}){
   const totalItems = items.length;
   const packedItems = (items.filter((item)=>item.packed===true)).length;
-  return <footer className="stats"><em>{`You have ${totalItems} item on your list, and you already packed ${packedItems} (${totalItems!==0 ?((packedItems/totalItems)*100):0}%)`}</em></footer>
+  const percentage = totalItems !== 0 ? Math.round((packedItems / totalItems) * 100) : 0;
+
+  return (
+    <footer className="stats">
+      <em>
+        {percentage===100.00? 'You got everything! ready to go ✈️':`You have ${totalItems} item on your list, and you
+        already packed ${packedItems} (${percentage}%)`}
+      </em>
+    </footer>
+  );
 }
